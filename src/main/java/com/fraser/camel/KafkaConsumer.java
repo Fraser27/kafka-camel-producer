@@ -26,7 +26,7 @@ public class KafkaConsumer extends RouteBuilder{
 
             @Override
             public void process(Exchange exch1) throws Exception {
-                Thread.sleep(3000);
+                Thread.sleep(4000);
                 System.out.println("Consumer----");
                 System.out.println(exch1.getIn().getBody());
             

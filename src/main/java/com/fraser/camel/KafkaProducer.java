@@ -22,7 +22,7 @@ public class KafkaProducer extends RouteBuilder{
         // String uri = "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
         
         // Fixed Timer publishing to Kafka every 2 seconds
-        from("timer://foo?fixedRate=true&period=2000")
+        from("timer://foo?fixedRate=true&period=1000")
         .process(new Processor() {
             @Override
             public void process(Exchange exch1) throws Exception {
