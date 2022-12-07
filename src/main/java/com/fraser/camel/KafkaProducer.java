@@ -21,8 +21,9 @@ public class KafkaProducer extends RouteBuilder{
     public void configure() throws Exception {
         // String uri = "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
         
-        // Fixed Timer publishing to Kafka every 2 seconds
-        from("timer://foo?fixedRate=true&period=1000")
+        // Fixed Timer publishing to Kafka every 100 ms
+        from("timer://foo?fixedRate=true&period=100")
+        .routeId("Producer 1")
         .process(new Processor() {
             @Override
             public void process(Exchange exch1) throws Exception {
@@ -30,7 +31,7 @@ public class KafkaProducer extends RouteBuilder{
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.put("tweetId", String.valueOf(Math.random()));
                 jsonObj.put("date", date);
-                jsonObj.put("message", String.valueOf("Hello"));
+                jsonObj.put("message", String.valueOf("Hello from Producer 1"));
                 exch1.getIn().setBody(jsonObj);
                 System.out.println(jsonObj);
                 exch1.getIn().setHeader(KafkaConstants.KEY, date);
@@ -38,6 +39,26 @@ public class KafkaProducer extends RouteBuilder{
             }           
         })
         .to(kafkaProps.getTopic());
+
+
+        // Fixed Timer publishing to Kafka every 100 ms
+        from("timer://foo?fixedRate=true&period=100")
+        .routeId("Producer 2")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exch1) throws Exception {
+                        String date = String.valueOf(new Date());
+                        JSONObject jsonObj = new JSONObject();
+                        jsonObj.put("tweetId", String.valueOf(Math.random()));
+                        jsonObj.put("date", date);
+                        jsonObj.put("message", String.valueOf("Hello from Producer 2"));
+                        exch1.getIn().setBody(jsonObj);
+                        System.out.println(jsonObj);
+                        exch1.getIn().setHeader(KafkaConstants.KEY, date);
+                        System.out.println(kafkaProps.getTopic());
+                    }           
+                })
+                .to(kafkaProps.getTopic());
     }
     
 }

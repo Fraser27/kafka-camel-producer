@@ -7,6 +7,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.processor.aggregate.GroupedBodyAggregationStrategy;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,19 +20,22 @@ public class KafkaConsumer extends RouteBuilder{
 
     @Override
     public void configure() throws Exception {
-        // String uri = "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
-        
-         // Consumers
-         from(kafkaProps.getTopic()).process(new Processor() {
-
+        // Consumers
+        from(kafkaProps.getTopic())
+        .routeId("Consumers")
+        .aggregate(new GroupedBodyAggregationStrategy())
+        .constant(true)
+        .completionSize(100)
+        .completionTimeout(500)
+        .process(new Processor() {
             @Override
             public void process(Exchange exch1) throws Exception {
-                Thread.sleep(4000);
-                System.out.println("Consumer----");
+                System.out.println("Consumer-Running---");
                 System.out.println(exch1.getIn().getBody());
-            
             }           
         }).log("Consumer is running");
+
+
     }
     
 }
