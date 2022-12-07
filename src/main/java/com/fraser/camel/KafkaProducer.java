@@ -47,7 +47,7 @@ public class KafkaProducer extends RouteBuilder{
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exch1) throws Exception {
-                        String date = String.valueOf(new Date());
+                        String date = String.valueOf(Math.random());
                         JSONObject jsonObj = new JSONObject();
                         jsonObj.put("tweetId", String.valueOf(Math.random()));
                         jsonObj.put("date", date);
