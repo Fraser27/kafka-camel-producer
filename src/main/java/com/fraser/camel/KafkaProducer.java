@@ -21,8 +21,8 @@ public class KafkaProducer extends RouteBuilder{
     public void configure() throws Exception {
         // String uri = "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
         
-        // Fixed Timer publishing to Kafka every 100 ms
-        from("timer://foo?fixedRate=true&period=100")
+        // Fixed Timer publishing to Kafka every 5 ms
+        from("timer://foo?fixedRate=true&period=5")
         .routeId("Producer 1")
         .process(new Processor() {
             @Override
@@ -41,8 +41,8 @@ public class KafkaProducer extends RouteBuilder{
         .to(kafkaProps.getTopic());
 
 
-        // Fixed Timer publishing to Kafka every 100 ms
-        from("timer://foo?fixedRate=true&period=100")
+        // Fixed Timer publishing to Kafka every 10 ms
+        from("timer://foo?fixedRate=true&period=10")
         .routeId("Producer 2")
                 .process(new Processor() {
                     @Override
