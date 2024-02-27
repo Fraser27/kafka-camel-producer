@@ -8,9 +8,8 @@ WORKDIR /app
 # Run maven clean and package 
 RUN mvn clean install
 
-FROM openjdk:11-jre-slim
+FROM amazoncorretto:11
 COPY --from=build /app/target/*.jar /opt/app.jar
-RUN apt-get install haveged -y
 EXPOSE 8080
 # Configure the entry point  
 ENTRYPOINT ["java","-jar","/opt/app.jar"]
