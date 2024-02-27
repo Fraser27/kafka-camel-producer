@@ -21,9 +21,9 @@ printf "$Green Start docker service $NC"
 sudo service docker start
 printf "$Green Give docker permissions to ec2-user $NC"
 sudo usermod -a -G docker ec2-user
-printf "$Green Install docker compose $NC"
-curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
-sudo chmod +x /usr/bin/docker-compose
+# printf "$Green Install docker compose $NC"
+# sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+# sudo chmod +x /usr/bin/docker-compose
 
 printf "$Green Run Kafka-manager on port 9000 $NC"
 image="deltaprojects/kafka-manager"
