@@ -37,7 +37,6 @@ if docker container ls -a --format '{{.Names}}' | grep -q $container; then
   sleep 5
   echo 'Wait for 5 seconds to stop kafka-manager..'
   docker container rm -f $container
-  docker container prune
 fi
 
 printf "$Green Run the kafka-manager container $NC"
@@ -46,7 +45,11 @@ docker run -d --name kafka-manager -p 9000:9000 -e ZK_HOSTS="$zookeeperurl" -e K
 container="kafka-microservices"
 if docker container ls -a --format '{{.Names}}' | grep -q $container; then
   printf "$Green Remove any existing  $container container $NC"
-  docker container rm $container
+  docker stop $container
+  sleep 5
+  echo 'Wait for 5 seconds to stop $container..'
+  docker container rm -f $container
+  docker container prune
 fi
 
 # Substitute bootstrap brokers
