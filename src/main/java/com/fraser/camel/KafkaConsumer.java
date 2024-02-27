@@ -69,12 +69,20 @@ public class KafkaConsumer extends RouteBuilder{
         .autoStartup(true)
         .multicast().parallelProcessing()
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
+        .process(exchange -> {
+            Object body = exchange.getIn().getBody();
+            exchange.getIn().setBody(mapper.writeValueAsString(body));
+        })
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-sms-whatsapp-topic-2")
         .autoStartup(false).multicast().parallelProcessing()
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
+        .process(exchange -> {
+            Object body = exchange.getIn().getBody();
+            exchange.getIn().setBody(mapper.writeValueAsString(body));
+        })
         .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
@@ -113,11 +121,15 @@ public class KafkaConsumer extends RouteBuilder{
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
-        
+
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true)
         .log("Hello World ${body}")
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
+        .process(exchange -> {
+            Object body = exchange.getIn().getBody();
+            exchange.getIn().setBody(mapper.writeValueAsString(body));
+        })
 		.to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     

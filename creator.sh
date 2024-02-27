@@ -75,4 +75,7 @@ fi
 printf "$Green Build and run the microservices demo project $NC"
 docker build -t "kafka-microservices:Dockerfile" .
 printf "$Green Start  $container container $NC"
+# Check for existing containers and remove them
+# docker container ls -a
+# docker container rm -f kafka-microservices
 docker run -d --name kafka-microservices -p 8080:8080 kafka-microservices:Dockerfile
