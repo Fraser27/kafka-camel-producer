@@ -211,7 +211,7 @@ public class KafkaProducer extends RouteBuilder {
 
                         Map<String, Object> mymap= jsonObj.toMap();
                         
-                        exch1.getIn().setBody(mymap);
+                        exch1.getIn().setBody(mapper.writeValueAsString(mymap));
                         System.out.println(jsonObj);
                         exch1.getIn().setHeader(KafkaConstants.KEY, productId);
                     }
