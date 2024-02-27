@@ -10,8 +10,9 @@ RUN mvn clean install
 
 FROM openjdk:11-jre-slim
 COPY --from=build /app/target/*.jar /opt/app.jar
+RUN apt-get install haveged -y
 EXPOSE 8080
 # Configure the entry point  
-ENTRYPOINT ["java",**"-Djava.security.egd=file:/dev/./urandom"**, "-jar","/opt/app.jar"]
+ENTRYPOINT ["java","-jar","/opt/app.jar"]
 # COPY target/kafka-camel-producer-1.0.jar kafka-camel-producer.jar
 # ENTRYPOINT ["java","-jar","/kafka-camel-producer.jar"]
