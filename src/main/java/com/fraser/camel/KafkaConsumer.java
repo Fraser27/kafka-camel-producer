@@ -102,12 +102,10 @@ public class KafkaConsumer extends RouteBuilder{
         from(kafkaProps.getWhatsapp2())
         .routeId("fetch-from-whatsapp-topic-2")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true).multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
