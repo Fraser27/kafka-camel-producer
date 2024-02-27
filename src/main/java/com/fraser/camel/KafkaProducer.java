@@ -15,6 +15,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 
@@ -35,6 +37,7 @@ public class KafkaProducer extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
         // String uri =
         // "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
         from(ADD_ORDER_ROUTE)
@@ -205,8 +208,10 @@ public class KafkaProducer extends RouteBuilder {
                         jsonObj.put("log_date", date);
                         
                         jsonObj.put("data", jsonInnerObj);
+
+                        Map<String, Object> mymap= jsonObj.toMap();
                         
-                        exch1.getIn().setBody(mapper.writeValueAsString(jsonObj));
+                        exch1.getIn().setBody(mymap);
                         System.out.println(jsonObj);
                         exch1.getIn().setHeader(KafkaConstants.KEY, productId);
                     }
