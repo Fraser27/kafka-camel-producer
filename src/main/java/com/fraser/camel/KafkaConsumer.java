@@ -3,6 +3,8 @@ package com.fraser.camel;
 import java.util.Map;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.component.kafka.KafkaManualCommit;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -105,7 +107,12 @@ public class KafkaConsumer extends RouteBuilder{
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
-        .autoStartup(true).multicast().parallelProcessing()
+        .autoStartup(true)
+        .process(exchange -> {
+					@SuppressWarnings("unchecked")
+                    Map<String, Object> data = exchange.getIn().getBody(Map.class);
+					exchange.getIn().setBody(mapper.writeValueAsString(data));
+		}).multicast().parallelProcessing()
         .to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
