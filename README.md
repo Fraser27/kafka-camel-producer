@@ -22,3 +22,12 @@ docker-compose -f kafka-docker-compose-setup.yaml up -d
 - verify ports are up
 nc -z localhost 9092 
 nc -z localhost 2181 
+
+
+# Steps to run this on an ec2
+# Ensure EC2 and MSK are on the same VPC and EC2 is in public subnet
+# Install GIT
+sudo yum install git
+git clone https://github.com/Fraser27/kafka-camel-producer
+cd kafka-camel-producer
+sh creator.sh

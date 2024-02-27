@@ -4,3 +4,4 @@ target/*
 .DS_Store
 .classpath
 .project
+creator-copy.sh
