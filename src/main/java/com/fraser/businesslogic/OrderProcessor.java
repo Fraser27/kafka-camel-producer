@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class OrderProcessor {
     
-    public void processOrders(Map<String, Object> order) {
+    public void processor(Map<String, Object> order) {
         try {
             Thread.sleep(1000);
             log.info("processing_order:" + order);

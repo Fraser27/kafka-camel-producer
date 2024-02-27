@@ -1,14 +1,6 @@
 package com.fraser.camel;
 
-import java.util.Date;
-
-import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.processor.aggregate.GroupedBodyAggregationStrategy;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,10 +31,80 @@ public class KafkaConsumer extends RouteBuilder{
         //         System.out.println(exch1.getIn().getBody());
         //     }           
         // })
-        .bean(OrderProcessor.class, "processOrders");
+        .bean(OrderProcessor.class, "processor");
         //.log("Consumer is running");
 
+        from(kafkaProps.getAnalytics())
+        .routeId("analytics-intake")
+        .autoStartup(false)
+        .bean(OrderProcessor.class, "processor");
 
+
+        from(kafkaProps.getS3dump())
+        .routeId("s3-dump-intake")
+        .autoStartup(false)
+        .bean(OrderProcessor.class, "processor");
+ 
+        
+        from(kafkaProps.getSubscription())
+        .routeId("send-to-email-topic-1")
+        .autoStartup(true)
+        .to(kafkaProps.getEmail1());
+
+        from(kafkaProps.getSubscription())
+        .routeId("send-to-email-topic-2")
+        .autoStartup(false)
+        .to(kafkaProps.getEmail2());
+
+        from(kafkaProps.getSubscription())
+        .routeId("send-to-sms-topic-1")
+        .autoStartup(true)
+        .to(kafkaProps.getSms1());
+
+        from(kafkaProps.getSubscription())
+        .routeId("send-to-sms-topic-2")
+        .autoStartup(false)
+        .to(kafkaProps.getSms2());
+
+        from(kafkaProps.getSubscription())
+        .routeId("send-to-whatsapp-topic-1")
+        .autoStartup(true)
+        .to(kafkaProps.getWhatsapp1());
+
+        from(kafkaProps.getSubscription())
+        .routeId("send-to-whatsapp-topic-2")
+        .autoStartup(false)
+        .to(kafkaProps.getWhatsapp2());
+
+        from(kafkaProps.getEmail1())
+        .routeId("fetch-from-emails-topic-1")
+        .autoStartup(true)
+        .bean(OrderProcessor.class, "processor");
+
+        from(kafkaProps.getEmail2())
+        .routeId("fetch-from-emails-topic-2")
+        .autoStartup(true)
+        .bean(OrderProcessor.class, "processor");
+
+        from(kafkaProps.getSms1())
+        .routeId("fetch-from-sms-topic-1")
+        .autoStartup(true)
+        .bean(OrderProcessor.class, "processor");
+
+        from(kafkaProps.getSms2())
+        .routeId("fetch-from-sms-topic-2")
+        .autoStartup(true)
+        .bean(OrderProcessor.class, "processor");
+
+        from(kafkaProps.getWhatsapp1())
+        .routeId("fetch-from-whatsapp-topic-1")
+        .autoStartup(true)
+        .bean(OrderProcessor.class, "processor");
+
+        from(kafkaProps.getWhatsapp2())
+        .routeId("fetch-from-whatsapp-topic-2")
+        .autoStartup(true)
+        .bean(OrderProcessor.class, "processor");
     }
     
 }
