@@ -1,6 +1,7 @@
 package com.fraser.camel;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -12,53 +13,64 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KafkaProducer extends RouteBuilder{
+public class KafkaProducer extends RouteBuilder {
 
     @Autowired
     private KafkaProperties kafkaProps;
 
+    public static final String ADD_ORDER_ROUTE = "direct:addOrder";
+
     @Override
     public void configure() throws Exception {
-        // String uri = "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
-        
-        // Fixed Timer publishing to Kafka every 5 ms
-        from("timer://foo?fixedRate=true&period=5")
-        .routeId("Producer 1")
-        .process(new Processor() {
-            @Override
-            public void process(Exchange exch1) throws Exception {
-                String date = String.valueOf(new Date());
-                JSONObject jsonObj = new JSONObject();
-                jsonObj.put("tweetId", String.valueOf(Math.random()));
-                jsonObj.put("date", date);
-                jsonObj.put("message", String.valueOf("Hello from Producer 1"));
-                exch1.getIn().setBody(jsonObj);
-                System.out.println(jsonObj);
-                exch1.getIn().setHeader(KafkaConstants.KEY, date);
-                System.out.println(kafkaProps.getTopic());
-            }           
-        })
-        .to(kafkaProps.getTopic());
-
-
-        // Fixed Timer publishing to Kafka every 10 ms
-        from("timer://foo?fixedRate=true&period=10")
-        .routeId("Producer 2")
+        // String uri =
+        // "kafka:tweets?brokers=10.0.38.95:9092&consumersCount=10&autoOffsetReset=latest&groupId=tweet-analytics";
+        from(ADD_ORDER_ROUTE)
+                .routeId("Add an Order")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exch1) throws Exception {
-                        String date = String.valueOf(Math.random());
+                        String date = String.valueOf(new Date());
                         JSONObject jsonObj = new JSONObject();
-                        jsonObj.put("tweetId", String.valueOf(Math.random()));
-                        jsonObj.put("date", date);
-                        jsonObj.put("message", String.valueOf("Hello from Producer 2"));
+                        jsonObj.put("orderId", String.valueOf(Math.random()));
+                        jsonObj.put("log_date", date);
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> event = exch1.getMessage().getBody(Map.class);
+                        jsonObj.put("data", event);
+                        String orderId = "0";
+                        if (event.containsKey("orderId")) {
+                            orderId = event.get("orderId").toString();
+                        }
                         exch1.getIn().setBody(jsonObj);
                         System.out.println(jsonObj);
-                        exch1.getIn().setHeader(KafkaConstants.KEY, date);
-                        System.out.println(kafkaProps.getTopic());
-                    }           
+                        exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
+                    }
                 })
-                .to(kafkaProps.getTopic());
+                .to(kafkaProps.getOrders());
+
+        // Fixed publishing every 5 millis
+        from("timer://foo?fixedRate=true&period=5")
+        .routeId("bulk-order")
+        .autoStartup(false)
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exch1) throws Exception {
+                        String date = String.valueOf(new Date());
+                        JSONObject jsonObj = new JSONObject();
+                        //jsonObj.put("orderId", String.valueOf(Math.random()));
+                        jsonObj.put("log_date", date);
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> event = exch1.getMessage().getBody(Map.class);
+                        String orderId = "0";
+                        if (event.containsKey("orderId")) {
+                            orderId = event.get("orderId").toString();
+                        }
+                        jsonObj.put("data", event);
+                        exch1.getIn().setBody(jsonObj);
+                        System.out.println(jsonObj);
+                        exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
+                    }
+                })
+                .to(kafkaProps.getOrders());
+
     }
-    
 }
