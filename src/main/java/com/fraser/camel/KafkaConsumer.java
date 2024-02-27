@@ -45,7 +45,6 @@ public class KafkaConsumer extends RouteBuilder{
         //         System.out.println(exch1.getIn().getBody());
         //     }           
         // })
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
         //.log("Consumer is running");
 

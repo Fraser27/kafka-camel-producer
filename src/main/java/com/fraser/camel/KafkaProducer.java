@@ -123,8 +123,8 @@ public class KafkaProducer extends RouteBuilder {
                     @Override
                     public void process(Exchange exch1) throws Exception {
                         String date = String.valueOf(new Date());
-                        JSONObject jsonObj = new JSONObject();
-                        JSONObject jsonInnerObj = new JSONObject();
+                        Map<String, Object> jsonObj = new HashMap<>();
+                        Map<String, Object> jsonInnerObj = new HashMap<>();
                         String orderId=String.valueOf(Math.random());
                         jsonInnerObj.put("orderId", orderId);
                         int randomIndex = rand.nextInt(categoryList.size());
@@ -144,7 +144,7 @@ public class KafkaProducer extends RouteBuilder {
                         jsonObj.put("log_date", date);
                         
                         jsonObj.put("data", jsonInnerObj);
-                        exch1.getIn().setBody(jsonObj);
+                        exch1.getIn().setBody(mapper.writeValueAsString(jsonObj));
                         System.out.println(jsonObj);
                         exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
                     }
