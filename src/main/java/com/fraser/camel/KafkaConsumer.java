@@ -68,13 +68,7 @@ public class KafkaConsumer extends RouteBuilder{
         .routeId("send-to-email-sms-whatsapp-topic-1")
         .autoStartup(true)
         .multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson, Map.class)
-        .process(exchange -> {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map_results = exchange.getIn().getBody(Map.class);
-            System.out.println("Printing in here " + map_results);
-            exchange.getIn().setBody(mapper.writeValueAsString(map_results));
-        })
+        .marshal().json(JsonLibrary.Jackson)
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
