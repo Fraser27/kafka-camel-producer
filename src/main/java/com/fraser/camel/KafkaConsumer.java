@@ -38,21 +38,21 @@ public class KafkaConsumer extends RouteBuilder{
         //         System.out.println(exch1.getIn().getBody());
         //     }           
         // })
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
         //.log("Consumer is running");
 
         from(kafkaProps.getAnalytics())
         .routeId("analytics-intake")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
 
         from(kafkaProps.getS3dump())
         .routeId("s3-dump-intake")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
  
         
@@ -60,54 +60,54 @@ public class KafkaConsumer extends RouteBuilder{
         .routeId("send-to-email-sms-whatsapp-topic-1")
         .autoStartup(true)
         .multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-sms-whatsapp-topic-2")
         .autoStartup(false).multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
         .routeId("fetch-from-emails-topic-1")
         .autoStartup(true)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getEmail2())
         .routeId("fetch-from-emails-topic-2")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getSms1())
         .routeId("fetch-from-sms-topic-1")
         .autoStartup(true)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getSms2())
         .routeId("fetch-from-sms-topic-2")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getWhatsapp1())
         .routeId("fetch-from-whatsapp-topic-1")
         .autoStartup(true)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getWhatsapp2())
         .routeId("fetch-from-whatsapp-topic-2")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true).multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
         .to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
