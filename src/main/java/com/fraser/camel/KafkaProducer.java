@@ -144,7 +144,7 @@ public class KafkaProducer extends RouteBuilder {
                         jsonObj.put("log_date", date);
                         
                         jsonObj.put("data", jsonInnerObj);
-                        exch1.getIn().setBody(mapper.writeValueAsString(jsonObj));
+                        exch1.getIn().setBody(jsonObj);
                         System.out.println(jsonObj);
                         exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
                     }

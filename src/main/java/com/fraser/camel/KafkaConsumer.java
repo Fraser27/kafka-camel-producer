@@ -34,6 +34,7 @@ public class KafkaConsumer extends RouteBuilder{
         // Consumers
         from(kafkaProps.getOrders())
         .routeId("order-intake")
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         //.aggregate(new GroupedBodyAggregationStrategy())
         //.constant(true)
         // .completionSize(100)
