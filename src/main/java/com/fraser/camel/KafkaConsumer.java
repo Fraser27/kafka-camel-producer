@@ -1,6 +1,7 @@
 package com.fraser.camel;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,31 +50,43 @@ public class KafkaConsumer extends RouteBuilder{
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-topic-1")
         .autoStartup(true)
+        .unmarshal()
+		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getEmail1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-topic-2")
         .autoStartup(false)
+        .unmarshal()
+		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getEmail2());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-sms-topic-1")
         .autoStartup(true)
+        .unmarshal()
+		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getSms1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-sms-topic-2")
         .autoStartup(false)
+        .unmarshal()
+		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getSms2());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-whatsapp-topic-1")
         .autoStartup(true)
+        .unmarshal()
+		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-whatsapp-topic-2")
         .autoStartup(false)
+        .unmarshal()
+		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
@@ -83,7 +96,7 @@ public class KafkaConsumer extends RouteBuilder{
 
         from(kafkaProps.getEmail2())
         .routeId("fetch-from-emails-topic-2")
-        .autoStartup(true)
+        .autoStartup(false)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getSms1())
@@ -93,7 +106,7 @@ public class KafkaConsumer extends RouteBuilder{
 
         from(kafkaProps.getSms2())
         .routeId("fetch-from-sms-topic-2")
-        .autoStartup(true)
+        .autoStartup(false)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getWhatsapp1())
@@ -103,7 +116,7 @@ public class KafkaConsumer extends RouteBuilder{
 
         from(kafkaProps.getWhatsapp2())
         .routeId("fetch-from-whatsapp-topic-2")
-        .autoStartup(true)
+        .autoStartup(false)
         .bean(OrderProcessor.class, "processor");
     }
     
