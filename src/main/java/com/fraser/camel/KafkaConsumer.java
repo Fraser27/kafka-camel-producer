@@ -50,43 +50,31 @@ public class KafkaConsumer extends RouteBuilder{
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-topic-1")
         .autoStartup(true)
-        .unmarshal()
-		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getEmail1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-topic-2")
         .autoStartup(false)
-        .unmarshal()
-		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getEmail2());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-sms-topic-1")
         .autoStartup(true)
-        .unmarshal()
-		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getSms1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-sms-topic-2")
         .autoStartup(false)
-        .unmarshal()
-		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getSms2());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-whatsapp-topic-1")
         .autoStartup(true)
-        .unmarshal()
-		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-whatsapp-topic-2")
         .autoStartup(false)
-        .unmarshal()
-		.json(JsonLibrary.Jackson)
         .to(kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
