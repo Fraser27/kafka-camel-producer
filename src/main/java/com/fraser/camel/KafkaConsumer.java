@@ -1,5 +1,6 @@
 package com.fraser.camel;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -108,11 +109,12 @@ public class KafkaConsumer extends RouteBuilder{
 
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true)
-        .process(exchange -> {
-					@SuppressWarnings("unchecked")
-                    Map<String, Object> data = exchange.getIn().getBody(Map.class);
-					exchange.getIn().setBody(mapper.writeValueAsString(data));
-		}).multicast().parallelProcessing()
+        .log("Hello World ${body}")
+        // .process(exchange -> {
+		// 			@SuppressWarnings("unchecked")
+        //             HashMap<String, Object> data = exchange.getIn().getBody(HashMap.class);
+		// 			exchange.getIn().setBody(mapper.writeValueAsString(data));
+		// }).multicast().parallelProcessing()
         .to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     

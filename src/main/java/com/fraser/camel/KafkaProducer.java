@@ -2,6 +2,7 @@ package com.fraser.camel;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -196,8 +197,8 @@ public class KafkaProducer extends RouteBuilder {
                     @Override
                     public void process(Exchange exch1) throws Exception {
                         String date = String.valueOf(new Date());
-                        JSONObject jsonObj = new JSONObject();
-                        JSONObject jsonInnerObj = new JSONObject();
+                        Map<String, Object> jsonObj = new HashMap<String, Object>();
+                        Map<String, Object> jsonInnerObj = new HashMap<String, Object>();
                         String productId=String.valueOf(Math.random());
                         jsonInnerObj.put("productId", productId);
                         int randomIndex = rand.nextInt(categoryList.size());
@@ -209,9 +210,7 @@ public class KafkaProducer extends RouteBuilder {
                         
                         jsonObj.put("data", jsonInnerObj);
 
-                        Map<String, Object> mymap= jsonObj.toMap();
-                        
-                        exch1.getIn().setBody(mapper.writeValueAsString(mymap));
+                        exch1.getIn().setBody(jsonObj);
                         System.out.println(jsonObj);
                         exch1.getIn().setHeader(KafkaConstants.KEY, productId);
                     }
