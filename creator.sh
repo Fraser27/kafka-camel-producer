@@ -3,6 +3,8 @@ Green='\033[0;32m'
 Red='\033[0;31m'
 NC='\033[0m'
 
+sudo su
+
 printf "$Green Enter a username for kafka-manager $NC"
 read username
 
@@ -16,14 +18,14 @@ printf "$Green Enter a bootstrap brokers string $NC"
 read bootstrapbrokers
 
 printf "$Green Installing docker $NC"
-sudo amazon-linux-extras install docker -y
+amazon-linux-extras install docker -y
 printf "$Green Start docker service $NC"
-sudo service docker start
+service docker start
 printf "$Green Give docker permissions to ec2-user $NC"
-sudo usermod -a -G docker ec2-user
+usermod -a -G docker ec2-user
 # printf "$Green Install docker compose $NC"
-# sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
-# sudo chmod +x /usr/bin/docker-compose
+# curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+# chmod +x /usr/bin/docker-compose
 
 printf "$Green Run Kafka-manager on port 9000 $NC"
 image="deltaprojects/kafka-manager"
