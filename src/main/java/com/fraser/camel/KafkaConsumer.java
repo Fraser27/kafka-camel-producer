@@ -70,8 +70,10 @@ public class KafkaConsumer extends RouteBuilder{
         .multicast().parallelProcessing()
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .process(exchange -> {
-            Object body = exchange.getIn().getBody();
-            exchange.getIn().setBody(mapper.writeValueAsString(body));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map_results = exchange.getIn().getBody(Map.class);
+            System.out.println("Printing in here " + map_results);
+            exchange.getIn().setBody(mapper.writeValueAsString(map_results));
         })
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
@@ -80,8 +82,10 @@ public class KafkaConsumer extends RouteBuilder{
         .autoStartup(false).multicast().parallelProcessing()
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .process(exchange -> {
-            Object body = exchange.getIn().getBody();
-            exchange.getIn().setBody(mapper.writeValueAsString(body));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map_results = exchange.getIn().getBody(Map.class);
+            System.out.println("Printing in here " + map_results);
+            exchange.getIn().setBody(mapper.writeValueAsString(map_results));
         })
         .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
@@ -127,8 +131,10 @@ public class KafkaConsumer extends RouteBuilder{
         .log("Hello World ${body}")
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .process(exchange -> {
-            Object body = exchange.getIn().getBody();
-            exchange.getIn().setBody(mapper.writeValueAsString(body));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map_results = exchange.getIn().getBody(Map.class);
+            System.out.println("Printing in here " + map_results);
+            exchange.getIn().setBody(mapper.writeValueAsString(map_results));
         })
 		.to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
