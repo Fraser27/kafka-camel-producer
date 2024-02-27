@@ -3,13 +3,17 @@ package com.fraser.camel;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.component.kafka.KafkaManualCommit;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.camel.support.ExpressionAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fraser.businesslogic.OrderProcessor;
 
@@ -110,6 +114,21 @@ public class KafkaConsumer extends RouteBuilder{
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true)
         .log("Hello World ${body}")
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
+				  .transform(new ValueBuilder(new ExpressionAdapter() {
+					   @Override
+					   public Object evaluate(Exchange exchange) {
+						try {   
+                            Map<String, Object> command = exchange.getIn().getBody(Map.class);
+						    return mapper.writeValueAsString(command);
+                        } catch (JsonProcessingException e) {
+                            System.out.println("Exception writing to string " + e.getMessage());
+                            
+                        }
+                        return "Hello World";
+					   }
+				  }))
+
         // .process(exchange -> {
 		// 			@SuppressWarnings("unchecked")
         //             HashMap<String, Object> data = exchange.getIn().getBody(HashMap.class);
