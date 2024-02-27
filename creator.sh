@@ -4,7 +4,8 @@ Red='\033[0;31m'
 NC='\033[0m'
 
 sudo su -s "$0"
-
+printf "$Green Remove dangling images $NC"
+docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
 printf "$Green Enter a username for kafka-manager $NC"
 read username
 
