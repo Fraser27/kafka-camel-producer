@@ -15,13 +15,18 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+
 
 @Component
 public class KafkaProducer extends RouteBuilder {
 
     @Autowired
     private KafkaProperties kafkaProps;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     public static final String ADD_ORDER_ROUTE = "direct:addOrder";
     List<String> categoryList = Arrays.asList("shoes", "clothes", "electronics", "toys");
@@ -65,6 +70,7 @@ public class KafkaProducer extends RouteBuilder {
                                 exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
                             }
                         })
+                        .convertBodyTo(String.class)
                         .to(kafkaProps.getOrders());
         
 
@@ -102,6 +108,7 @@ public class KafkaProducer extends RouteBuilder {
                         exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
                     }
                 })
+                .convertBodyTo(String.class)
                 .to(kafkaProps.getOrders());
 
         
@@ -138,6 +145,7 @@ public class KafkaProducer extends RouteBuilder {
                         exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
                     }
                 })
+                .convertBodyTo(String.class)
                 .to(kafkaProps.getOrders());
         
 
@@ -174,6 +182,7 @@ public class KafkaProducer extends RouteBuilder {
                         exch1.getIn().setHeader(KafkaConstants.KEY, orderId);
                     }
                 })
+                .convertBodyTo(String.class)
                 .to(kafkaProps.getOrders());
 
     

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Data
 public class OrderProcessor {
+    private ObjectMapper mapper;
     
     public void processor(Map<String, Object> order) {
         try {

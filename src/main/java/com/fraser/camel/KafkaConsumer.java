@@ -5,6 +5,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fraser.businesslogic.OrderProcessor;
 
 @Component
@@ -15,6 +16,9 @@ public class KafkaConsumer extends RouteBuilder{
 
     @Autowired
     private OrderProcessor processor;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Override
     public void configure() throws Exception {
@@ -48,34 +52,15 @@ public class KafkaConsumer extends RouteBuilder{
  
         
         from(kafkaProps.getSubscription())
-        .routeId("send-to-email-topic-1")
+        .routeId("send-to-email-sms-whatsapp-topic-1")
         .autoStartup(true)
-        .to(kafkaProps.getEmail1());
+        .multicast().parallelProcessing()
+        .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
-        .routeId("send-to-email-topic-2")
-        .autoStartup(false)
-        .to(kafkaProps.getEmail2());
-
-        from(kafkaProps.getSubscription())
-        .routeId("send-to-sms-topic-1")
-        .autoStartup(true)
-        .to(kafkaProps.getSms1());
-
-        from(kafkaProps.getSubscription())
-        .routeId("send-to-sms-topic-2")
-        .autoStartup(false)
-        .to(kafkaProps.getSms2());
-
-        from(kafkaProps.getSubscription())
-        .routeId("send-to-whatsapp-topic-1")
-        .autoStartup(true)
-        .to(kafkaProps.getWhatsapp1());
-
-        from(kafkaProps.getSubscription())
-        .routeId("send-to-whatsapp-topic-2")
-        .autoStartup(false)
-        .to(kafkaProps.getWhatsapp2());
+        .routeId("send-to-email-sms-whatsapp-topic-2")
+        .autoStartup(false).multicast().parallelProcessing()
+        .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
         .routeId("fetch-from-emails-topic-1")
@@ -106,6 +91,9 @@ public class KafkaConsumer extends RouteBuilder{
         .routeId("fetch-from-whatsapp-topic-2")
         .autoStartup(false)
         .bean(OrderProcessor.class, "processor");
+
+        from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
+        .autoStartup(true).multicast().parallelProcessing().to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
 }
