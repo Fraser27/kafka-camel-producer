@@ -9,6 +9,12 @@ read username
 printf "$Green Enter a password for kafka-manager $NC"
 read passwd
 
+printf "$Green Enter zookeeper  string $NC"
+read zookeeperurl
+
+printf "$Green Enter a bootstrap brokers string $NC"
+read bootstrapbrokers
+
 printf "$Green Installing docker $NC"
 amazon-linux-extras install docker -y
 printf "$Green Start docker service $NC"
@@ -29,12 +35,28 @@ if docker container ls -a --format '{{.Names}}' | grep -q $container; then
 fi
 
 printf "$Green Run the kafka-manager container $NC"
-docker run -d --name kafka-manager -p 9000:9000 -e KAFKA_MANAGER_USERNAME=$username -e KAFKA_MANAGER_PASSWORD=$passwd deltaprojects/kafka-manager
+docker run -d --name kafka-manager -p 9000:9000 -e ZK_HOSTS="$zookeeperurl" -e KAFKA_MANAGER_USERNAME="$username" -e KAFKA_MANAGER_PASSWORD="$passwd" deltaprojects/kafka-manager
 
 container="kafka-microservices"
 if docker container ls -a --format '{{.Names}}' | grep -q $container; then
   printf "$Green Remove any existing  $container container $NC"
   docker container rm $container
+fi
+
+# Substitute bootstrap brokers
+#!/bin/bash
+prop_file="src/main/resources/application.properties" 
+
+prop_name="kafka.brokers"
+
+new_prop_value="$bootstrapbrokers"
+
+if grep -Eq "^${prop_name}[[:space:]]*=" "$prop_file"; then
+# Replace property value
+  sed -i '' "s/^${prop_name}=.*/$prop_name=$new_prop_value/g" $prop_file
+  echo "Property $prop_name updated successfully in $prop_file"
+else
+  echo "Property $prop_name does not exist in $prop_file"
 fi
 
 printf "$Green Build and run the microservices demo project $NC"
