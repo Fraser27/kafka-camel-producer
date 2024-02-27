@@ -33,7 +33,11 @@ container="kafka-manager"
 
 if docker container ls -a --format '{{.Names}}' | grep -q $container; then
   printf "$Green Remove any existing $container container $NC"
-  docker container rm $container
+  docker stop $container
+  sleep 5
+  echo 'Wait for 5 seconds to stop kafka-manager..'
+  docker container rm -f $container
+  docker container prune
 fi
 
 printf "$Green Run the kafka-manager container $NC"
@@ -55,7 +59,10 @@ new_prop_value="$bootstrapbrokers"
 
 if grep -Eq "^${prop_name}[[:space:]]*=" "$prop_file"; then
 # Replace property value
-  sed -i '' "s/^${prop_name}=.*/$prop_name=$new_prop_value/g" $prop_file
+  # This command works on linux not on mac
+  sed -i "s/^${prop_name}=.*/$prop_name=$new_prop_value/g" $prop_file
+  # This command works on mac not on linux
+  #sed -i '' "s/^${prop_name}=.*/$prop_name=$new_prop_value/g" $prop_file
   echo "Property $prop_name updated successfully in $prop_file"
 else
   echo "Property $prop_name does not exist in $prop_file"

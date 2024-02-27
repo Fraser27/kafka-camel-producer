@@ -31,3 +31,6 @@ sudo yum install git
 git clone https://github.com/Fraser27/kafka-camel-producer
 cd kafka-camel-producer
 sh creator.sh
+
+# Once deployment is complete
+http://your-public-ip:9000/ -> Add MSK cluster here
