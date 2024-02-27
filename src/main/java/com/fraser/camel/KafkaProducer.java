@@ -48,7 +48,7 @@ public class KafkaProducer extends RouteBuilder {
                 .to(kafkaProps.getOrders());
 
         // Fixed publishing every 5 millis
-        from("timer://foo?fixedRate=true&period=5")
+        from("timer://foo?fixedRate=true&period=10")
         .routeId("bulk-order")
         .autoStartup(false)
                 .process(new Processor() {
