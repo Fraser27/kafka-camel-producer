@@ -53,14 +53,14 @@ public class KafkaConsumer extends RouteBuilder{
         from(kafkaProps.getAnalytics())
         .routeId("analytics-intake")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
 
         from(kafkaProps.getS3dump())
         .routeId("s3-dump-intake")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
  
         
@@ -68,74 +68,57 @@ public class KafkaConsumer extends RouteBuilder{
         .routeId("send-to-email-sms-whatsapp-topic-1")
         .autoStartup(true)
         .multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-sms-whatsapp-topic-2")
         .autoStartup(false).multicast().parallelProcessing()
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
         .routeId("fetch-from-emails-topic-1")
         .autoStartup(true)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getEmail2())
         .routeId("fetch-from-emails-topic-2")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getSms1())
         .routeId("fetch-from-sms-topic-1")
         .autoStartup(true)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getSms2())
         .routeId("fetch-from-sms-topic-2")
         .autoStartup(false)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getWhatsapp1())
         .routeId("fetch-from-whatsapp-topic-1")
         .autoStartup(true)
-        .unmarshal().json(JsonLibrary.Jackson, Map.class).convertBodyTo(String.class)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
         from(kafkaProps.getWhatsapp2())
         .routeId("fetch-from-whatsapp-topic-2")
         .autoStartup(false)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "processor");
 
+        
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true)
         .log("Hello World ${body}")
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
-				  .transform(new ValueBuilder(new ExpressionAdapter() {
-					   @Override
-					   public Object evaluate(Exchange exchange) {
-						try {   
-                            Map<String, Object> command = exchange.getIn().getBody(Map.class);
-						    return mapper.writeValueAsString(command);
-                        } catch (JsonProcessingException e) {
-                            System.out.println("Exception writing to string " + e.getMessage());
-                            
-                        }
-                        return "Hello World";
-					   }
-				  }))
-
-        // .process(exchange -> {
-		// 			@SuppressWarnings("unchecked")
-        //             HashMap<String, Object> data = exchange.getIn().getBody(HashMap.class);
-		// 			exchange.getIn().setBody(mapper.writeValueAsString(data));
-		// }).multicast().parallelProcessing()
-        .to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
+		.to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
 }

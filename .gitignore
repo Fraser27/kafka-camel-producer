@@ -5,3 +5,4 @@ target/*
 .classpath
 .project
 creator-copy.sh
+camel-visualizer
