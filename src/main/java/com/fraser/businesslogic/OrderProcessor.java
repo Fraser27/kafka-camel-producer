@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,14 @@ public class OrderProcessor {
         } catch (InterruptedException e) {
             log.error("processing_order_error:" + e.getMessage());
         }
+    }
+
+
+    public String mapToJson(Map<String, Object> data) throws JsonProcessingException {
+        String string_json = mapper.writeValueAsString(data);
+        System.out.println("Map-To-Json Map="+data+" , string_json="+string_json);
+        return string_json;
+        
     }
 
 }

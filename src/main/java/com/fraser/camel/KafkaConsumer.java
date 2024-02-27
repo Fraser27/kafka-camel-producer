@@ -68,19 +68,15 @@ public class KafkaConsumer extends RouteBuilder{
         .routeId("send-to-email-sms-whatsapp-topic-1")
         .autoStartup(true)
         .multicast().parallelProcessing()
-        .marshal().json(JsonLibrary.Jackson)
+        .unmarshal().json(JsonLibrary.Jackson, Map.class)
+        .bean(OrderProcessor.class, "mapToJson")
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-sms-whatsapp-topic-2")
         .autoStartup(false).multicast().parallelProcessing()
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
-        .process(exchange -> {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map_results = exchange.getIn().getBody(Map.class);
-            System.out.println("Printing in here " + map_results);
-            exchange.getIn().setBody(mapper.writeValueAsString(map_results));
-        })
+        .bean(OrderProcessor.class, "mapToJson")
         .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
@@ -124,12 +120,7 @@ public class KafkaConsumer extends RouteBuilder{
         .autoStartup(true)
         .log("Hello World ${body}")
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
-        .process(exchange -> {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map_results = exchange.getIn().getBody(Map.class);
-            System.out.println("Printing in here " + map_results);
-            exchange.getIn().setBody(mapper.writeValueAsString(map_results));
-        })
+        .bean(OrderProcessor.class, "mapToJson")
 		.to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
