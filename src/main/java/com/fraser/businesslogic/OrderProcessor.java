@@ -30,8 +30,9 @@ public class OrderProcessor {
 
 
     public String mapToJson(Map<String, Object> data) throws JsonProcessingException {
+        System.out.println("method=mapToJson Map="+data);
         String string_json = mapper.writeValueAsString(data);
-        System.out.println("Map-To-Json Map="+data+" , string_json="+string_json);
+        System.out.println("mapToJson Map="+data+" , string_json="+string_json);
         return string_json;
         
     }

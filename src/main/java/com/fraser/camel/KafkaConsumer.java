@@ -67,16 +67,17 @@ public class KafkaConsumer extends RouteBuilder{
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-sms-whatsapp-topic-1")
         .autoStartup(true)
-        .multicast().parallelProcessing()
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "mapToJson")
+        .multicast().parallelProcessing()
         .to(kafkaProps.getEmail1(), kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
 
         from(kafkaProps.getSubscription())
         .routeId("send-to-email-sms-whatsapp-topic-2")
-        .autoStartup(false).multicast().parallelProcessing()
+        .autoStartup(false)
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "mapToJson")
+        .multicast().parallelProcessing()
         .to(kafkaProps.getEmail2(), kafkaProps.getSms2(), kafkaProps.getWhatsapp2());
 
         from(kafkaProps.getEmail1())
@@ -118,9 +119,9 @@ public class KafkaConsumer extends RouteBuilder{
 
         from(kafkaProps.getNewarrivals()).routeId("send-new-arrivals-details")
         .autoStartup(true)
-        .log("Hello World ${body}")
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .bean(OrderProcessor.class, "mapToJson")
+        .multicast().parallelProcessing()
 		.to(kafkaProps.getEmail1(),kafkaProps.getSms1(), kafkaProps.getWhatsapp1());
     }
     
