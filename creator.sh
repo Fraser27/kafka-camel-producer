@@ -45,7 +45,7 @@ docker run -d --name kafka-manager -p 9000:9000 -e ZK_HOSTS="$zookeeperurl" -e K
 container="kafka-microservices"
 if docker container ls -a --format '{{.Names}}' | grep -q $container; then
   printf "$Green Remove any existing  $container container $NC"
-  docker stop $container
+  docker kill $container
   sleep 5
   echo 'Wait for 5 seconds to stop $container..'
   docker container rm -f $container
